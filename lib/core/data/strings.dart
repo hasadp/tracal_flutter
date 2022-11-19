@@ -16,4 +16,17 @@ abstract class Strings {
   static const String ok = 'OK';
 
   static const close = 'Close';
+
+  static const String addTrade = 'Add Trade';
+
+  static const String error = 'Error';
+
+  static const dateRange = 'Date Range';
+
+  static const amount = 'Amount';
+
+  static const buy = 'Buy';
+  static const sell = 'Sell';
+
+  static const date = 'Date';
 }

@@ -216,20 +216,23 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
 class Transaction extends DataClass implements Insertable<Transaction> {
   final int id;
   final int stockId;
-  final DateTime times;
+  final DateTime date;
   final double amount;
+  final String type;
   const Transaction(
       {required this.id,
       required this.stockId,
-      required this.times,
-      required this.amount});
+      required this.date,
+      required this.amount,
+      required this.type});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['stock_id'] = Variable<int>(stockId);
-    map['times'] = Variable<DateTime>(times);
+    map['date'] = Variable<DateTime>(date);
     map['amount'] = Variable<double>(amount);
+    map['type'] = Variable<String>(type);
     return map;
   }
 
@@ -237,8 +240,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     return TransactionsCompanion(
       id: Value(id),
       stockId: Value(stockId),
-      times: Value(times),
+      date: Value(date),
       amount: Value(amount),
+      type: Value(type),
     );
   }
 
@@ -248,8 +252,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     return Transaction(
       id: serializer.fromJson<int>(json['id']),
       stockId: serializer.fromJson<int>(json['stockId']),
-      times: serializer.fromJson<DateTime>(json['times']),
+      date: serializer.fromJson<DateTime>(json['date']),
       amount: serializer.fromJson<double>(json['amount']),
+      type: serializer.fromJson<String>(json['type']),
     );
   }
   @override
@@ -258,85 +263,101 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'stockId': serializer.toJson<int>(stockId),
-      'times': serializer.toJson<DateTime>(times),
+      'date': serializer.toJson<DateTime>(date),
       'amount': serializer.toJson<double>(amount),
+      'type': serializer.toJson<String>(type),
     };
   }
 
   Transaction copyWith(
-          {int? id, int? stockId, DateTime? times, double? amount}) =>
+          {int? id,
+          int? stockId,
+          DateTime? date,
+          double? amount,
+          String? type}) =>
       Transaction(
         id: id ?? this.id,
         stockId: stockId ?? this.stockId,
-        times: times ?? this.times,
+        date: date ?? this.date,
         amount: amount ?? this.amount,
+        type: type ?? this.type,
       );
   @override
   String toString() {
     return (StringBuffer('Transaction(')
           ..write('id: $id, ')
           ..write('stockId: $stockId, ')
-          ..write('times: $times, ')
-          ..write('amount: $amount')
+          ..write('date: $date, ')
+          ..write('amount: $amount, ')
+          ..write('type: $type')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, stockId, times, amount);
+  int get hashCode => Object.hash(id, stockId, date, amount, type);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Transaction &&
           other.id == this.id &&
           other.stockId == this.stockId &&
-          other.times == this.times &&
-          other.amount == this.amount);
+          other.date == this.date &&
+          other.amount == this.amount &&
+          other.type == this.type);
 }
 
 class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<int> id;
   final Value<int> stockId;
-  final Value<DateTime> times;
+  final Value<DateTime> date;
   final Value<double> amount;
+  final Value<String> type;
   const TransactionsCompanion({
     this.id = const Value.absent(),
     this.stockId = const Value.absent(),
-    this.times = const Value.absent(),
+    this.date = const Value.absent(),
     this.amount = const Value.absent(),
+    this.type = const Value.absent(),
   });
   TransactionsCompanion.insert({
     this.id = const Value.absent(),
     required int stockId,
-    required DateTime times,
+    required DateTime date,
     required double amount,
+    required String type,
   })  : stockId = Value(stockId),
-        times = Value(times),
-        amount = Value(amount);
+        date = Value(date),
+        amount = Value(amount),
+        type = Value(type);
   static Insertable<Transaction> custom({
     Expression<int>? id,
     Expression<int>? stockId,
-    Expression<DateTime>? times,
+    Expression<DateTime>? date,
     Expression<double>? amount,
+    Expression<String>? type,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (stockId != null) 'stock_id': stockId,
-      if (times != null) 'times': times,
+      if (date != null) 'date': date,
       if (amount != null) 'amount': amount,
+      if (type != null) 'type': type,
     });
   }
 
   TransactionsCompanion copyWith(
       {Value<int>? id,
       Value<int>? stockId,
-      Value<DateTime>? times,
-      Value<double>? amount}) {
+      Value<DateTime>? date,
+      Value<double>? amount,
+      Value<String>? type}) {
     return TransactionsCompanion(
       id: id ?? this.id,
       stockId: stockId ?? this.stockId,
-      times: times ?? this.times,
+      date: date ?? this.date,
       amount: amount ?? this.amount,
+      type: type ?? this.type,
     );
   }
 
@@ -349,11 +370,14 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (stockId.present) {
       map['stock_id'] = Variable<int>(stockId.value);
     }
-    if (times.present) {
-      map['times'] = Variable<DateTime>(times.value);
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
     }
     if (amount.present) {
       map['amount'] = Variable<double>(amount.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
     }
     return map;
   }
@@ -363,8 +387,9 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     return (StringBuffer('TransactionsCompanion(')
           ..write('id: $id, ')
           ..write('stockId: $stockId, ')
-          ..write('times: $times, ')
-          ..write('amount: $amount')
+          ..write('date: $date, ')
+          ..write('amount: $amount, ')
+          ..write('type: $type')
           ..write(')'))
         .toString();
   }
@@ -390,18 +415,26 @@ class $TransactionsTable extends Transactions
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       defaultConstraints: 'REFERENCES "stocks" ("id")');
-  final VerificationMeta _timesMeta = const VerificationMeta('times');
+  final VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  late final GeneratedColumn<DateTime> times = GeneratedColumn<DateTime>(
-      'times', aliasedName, false,
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   final VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
   late final GeneratedColumn<double> amount = GeneratedColumn<double>(
       'amount', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
+  final VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
-  List<GeneratedColumn> get $columns => [id, stockId, times, amount];
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 1),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, stockId, date, amount, type];
   @override
   String get aliasedName => _alias ?? 'transactions';
   @override
@@ -420,17 +453,23 @@ class $TransactionsTable extends Transactions
     } else if (isInserting) {
       context.missing(_stockIdMeta);
     }
-    if (data.containsKey('times')) {
+    if (data.containsKey('date')) {
       context.handle(
-          _timesMeta, times.isAcceptableOrUnknown(data['times']!, _timesMeta));
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
     } else if (isInserting) {
-      context.missing(_timesMeta);
+      context.missing(_dateMeta);
     }
     if (data.containsKey('amount')) {
       context.handle(_amountMeta,
           amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
     } else if (isInserting) {
       context.missing(_amountMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
     }
     return context;
   }
@@ -445,10 +484,12 @@ class $TransactionsTable extends Transactions
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       stockId: attachedDatabase.options.types
           .read(DriftSqlType.int, data['${effectivePrefix}stock_id'])!,
-      times: attachedDatabase.options.types
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}times'])!,
+      date: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
       amount: attachedDatabase.options.types
           .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
+      type: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
     );
   }
 
