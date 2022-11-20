@@ -30,6 +30,15 @@ class StockSearchPressed extends StockEvent {
   List<Object> get props => [];
 }
 
+class StockShowCategorized extends StockEvent {
+  final bool isCategorized;
+
+  StockShowCategorized(this.isCategorized);
+
+  @override
+  List<Object> get props => [];
+}
+
 class StockAddPressed extends StockEvent {
   final Stock stock;
 

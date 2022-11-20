@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:tracal/data/provider/api.dart';
@@ -13,10 +14,27 @@ part 'database.g.dart';
 @DriftDatabase(tables: [Stocks, Transactions])
 class Database extends _$Database implements Api {
   static final Database _instance = Database._();
-  Database._() : super(NativeDatabase.memory(logStatements: true));
+
+  Database._() : super(_openConnection());
+
   static Database get instance => _instance;
+
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(onCreate: (Migrator m) async {
+      await m.createAll();
+    }, onUpgrade: (Migrator m, int from, int to) async {
+      if (kDebugMode) {
+        print('Database from: $from Database to: $to');
+      }
+      m.deleteTable('stocks');
+      m.deleteTable('transactions');
+      m.createAll();
+    });
+  }
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -49,10 +67,10 @@ class Database extends _$Database implements Api {
   Future<List<Stock>> getStocks() async => await select(stocks).get();
 
   @override
-  Future<List<Transaction>> getTransactions(DateTime startDate,
-      DateTime endDate, String stockName, int? limit) async {
-    return (select(transactions)
-          ..where((tbl) => tbl.date.isBetweenValues(startDate, endDate)))
+  Future<List<Transaction>> getTransactionsBetweenDates(
+      DateTime startDate, DateTime endDate) async {
+    return ((select(transactions)..where((tbl) => tbl.date.isBetweenValues(startDate, endDate)))
+          ..orderBy([(tbl) => OrderingTerm.desc(tbl.date)]))
         .get();
   }
 

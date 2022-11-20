@@ -13,4 +13,8 @@ class HomeRepository {
 
   Future<void> addTransaction(Transaction transaction) async =>
       await api.addTransaction(transaction);
+
+  Future<List<Transaction>> getTransactionsBetweenDates(
+          startDate, endDate) async =>
+      await api.getTransactionsBetweenDates(startDate, endDate);
 }

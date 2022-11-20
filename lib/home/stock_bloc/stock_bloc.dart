@@ -22,11 +22,13 @@ class StockBloc extends Bloc<StockEvent, StockState> {
     on<StockLoadStocks>(_onStockLoadStocks);
     on<StockError>(_onStockError);
     on<StockLoadTransactions>(_onStockLoadTransactions);
+    on<StockShowCategorized>(_onShowCategorized);
   }
 
   _onStockLoadTransactions(event, emit) async {
     try {
-      List<Transaction> transactions = await repo.getTransactions();
+      List<Transaction> transactions = await repo.getTransactionsBetweenDates(
+          state.dateTimeRange!.start, state.dateTimeRange!.end);
       emit(state.copyWith(transactions: transactions));
     } catch (e) {
       add(StockError(e.toString()));
@@ -55,7 +57,7 @@ class StockBloc extends Bloc<StockEvent, StockState> {
   }
 
   _onStockDateRangeChanged(StockDateRangeChanged event, emit) async {
-    print(event.range.toString());
+    emit(state.copyWith(dateTimeRange: event.range));
   }
 
   _onSearchPressed(event, emit) async {}
@@ -66,5 +68,9 @@ class StockBloc extends Bloc<StockEvent, StockState> {
 
   _onStockDropdownChanged(event, emit) {
     emit(state.copyWith(dropdownValue: event.value));
+  }
+
+  _onShowCategorized(event, emit) {
+    emit(state.copyWith(showCategorized: event.isCategorized));
   }
 }

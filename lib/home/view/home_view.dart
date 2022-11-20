@@ -8,6 +8,7 @@ import '../../core/data/data.dart';
 import '../../data/database/database.dart';
 import '../stock_bloc/stock_bloc.dart';
 import '../stock_bloc/stock_state.dart';
+import '../widgets/categorical_table._window.dart';
 import '../widgets/transactions_table.dart';
 import '../widgets/widgets.dart';
 
@@ -52,7 +53,6 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<StockBloc>().state;
     return Scaffold(
-      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -60,13 +60,30 @@ class HomeView extends StatelessWidget {
           children: <Widget>[
             Expanded(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   const Sidebar(),
+                  //CategoricalWindows(
+                  //   transactions: state.transactions, stocks: state.stocks)
+                  //Expanded(child: TransactionsGrid(state.transactions, state.stocks))
+
                   Expanded(
-                      child: Center(
-                          child: TransactionsTable(
-                              state.transactions, state.stocks)))
+                      child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        state.showCategorized
+                            ? CategoricalWindows(
+                                transactions: state.transactions,
+                                stocks: state.stocks)
+                            : TransactionsTable(
+                                state.transactions, state.stocks)
+                      ],
+                    ),
+                  ))
                 ],
               ),
             ),
@@ -83,6 +100,7 @@ class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<StockBloc>().state;
+    final bloc = context.read<StockBloc>();
     return SizedBox(
       width: 250,
       child: Container(
@@ -94,41 +112,47 @@ class Sidebar extends StatelessWidget {
           child: SizedBox.expand(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  OutlinedButton(
-                      onPressed: () {
-                        _showAddTradeDialog(context);
-                      },
-                      child: const Text(Strings.addTrade)),
-                  const Divider(),
-                  OutlinedButton(
-                      onPressed: () => _onAddStockPressed(context),
-                      child: const Text(Strings.addStock)),
-                  const Divider(height: 40, thickness: 3),
-                  CheckboxListTile(
-                      title: const Text('Stock Wise Display'),
-                      value: false,
-                      onChanged: (value) {}),
-                  if (state.stocks.isNotEmpty)
-                    DropdownButton(
-                        value: state.dropdownValue,
-                        items: state.stocks
-                            .map((e) =>
-                                DropdownMenuItem(value: e, child: Text(e.name)))
-                            .toList(),
-                        onChanged: (value) => context
-                            .read<StockBloc>()
-                            .add(StockDropdownChanged(value!))),
-                  const DateRangeField(),
-                  ElevatedButton(
-                      onPressed: () => context
-                          .read<StockBloc>()
-                          .add(StockLoadTransactions()),
-                      child: const Text(Strings.search)),
-                  const Spacer(),
-                ],
+              child: Form(
+                key: state.formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    OutlinedButton(
+                        onPressed: () {
+                          _showAddTradeDialog(context, bloc);
+                        },
+                        child: const Text(Strings.addTrade)),
+                    const Divider(),
+                    OutlinedButton(
+                        onPressed: () => _onAddStockPressed(context),
+                        child: const Text(Strings.addStock)),
+                    const Divider(height: 40, thickness: 3),
+                    CheckboxListTile(
+                        title: const Text('Stock Wise Display'),
+                        value: state.showCategorized,
+                        onChanged: (value) =>
+                            bloc.add(StockShowCategorized(value!))),
+                    if (state.stocks.isNotEmpty)
+                      DropdownButton(
+                          value: state.dropdownValue,
+                          items: state.stocks
+                              .map((e) => DropdownMenuItem(
+                                  value: e, child: Text(e.name)))
+                              .toList(),
+                          onChanged: (value) => context
+                              .read<StockBloc>()
+                              .add(StockDropdownChanged(value!))),
+                    const DateRangeField(),
+                    ElevatedButton(
+                        onPressed: () {
+                          if (state.formKey.currentState!.validate()) {
+                            bloc.add(StockLoadTransactions());
+                          }
+                        },
+                        child: const Text(Strings.search)),
+                    const Spacer(),
+                  ],
+                ),
               ),
             ),
           )),
@@ -183,7 +207,7 @@ class Sidebar extends StatelessWidget {
             ));
   }
 
-  _showAddTradeDialog(BuildContext context) async {
+  _showAddTradeDialog(BuildContext context, StockBloc bloc) async {
     await showDialog(
         context: context,
         builder: (context) {
@@ -233,6 +257,7 @@ class Sidebar extends StatelessWidget {
                                     title: const Text(Strings.sell),
                                   ),
                                 ),
+                                const Spacer()
                               ],
                             ),
                             TextFormField(
@@ -260,10 +285,10 @@ class Sidebar extends StatelessWidget {
                             child: const Text(Strings.close)),
                         ElevatedButton(
                             onPressed: () {
-                              print(state.toString());
                               if (state.formKey.currentState!.validate()) {
                                 cubit.addTransaction();
                                 Navigator.pop(context);
+                                bloc.add(StockLoadTransactions());
                               }
                             },
                             child: const Text(Strings.add))

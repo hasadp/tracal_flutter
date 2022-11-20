@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/database/database.dart';
 
 class StockState {
+  final GlobalKey<FormState> formKey;
   final List<Transaction> transactions;
   final bool sidebarLoading;
   final bool mainLoading;
@@ -17,10 +18,12 @@ class StockState {
   final Stock? dropdownValue;
   final String dateRangeString;
   final DateTimeRange? dateTimeRange;
+  final bool showCategorized;
 
 //<editor-fold desc="Data Methods">
 
   const StockState({
+    required this.formKey,
     required this.transactions,
     required this.sidebarLoading,
     required this.mainLoading,
@@ -35,6 +38,7 @@ class StockState {
     this.dropdownValue,
     required this.dateRangeString,
     this.dateTimeRange,
+    required this.showCategorized,
   });
 
   @override
@@ -42,6 +46,7 @@ class StockState {
       identical(this, other) ||
       (other is StockState &&
           runtimeType == other.runtimeType &&
+          formKey == other.formKey &&
           transactions == other.transactions &&
           sidebarLoading == other.sidebarLoading &&
           mainLoading == other.mainLoading &&
@@ -55,10 +60,12 @@ class StockState {
           error == other.error &&
           dropdownValue == other.dropdownValue &&
           dateRangeString == other.dateRangeString &&
-          dateTimeRange == other.dateTimeRange);
+          dateTimeRange == other.dateTimeRange &&
+          showCategorized == other.showCategorized);
 
   @override
   int get hashCode =>
+      formKey.hashCode ^
       transactions.hashCode ^
       sidebarLoading.hashCode ^
       mainLoading.hashCode ^
@@ -72,11 +79,13 @@ class StockState {
       error.hashCode ^
       dropdownValue.hashCode ^
       dateRangeString.hashCode ^
-      dateTimeRange.hashCode;
+      dateTimeRange.hashCode ^
+      showCategorized.hashCode;
 
   @override
   String toString() {
     return 'StockState{' +
+        ' formKey: $formKey,' +
         ' transactions: $transactions,' +
         ' sidebarLoading: $sidebarLoading,' +
         ' mainLoading: $mainLoading,' +
@@ -91,10 +100,12 @@ class StockState {
         ' dropdownValue: $dropdownValue,' +
         ' dateRangeString: $dateRangeString,' +
         ' dateTimeRange: $dateTimeRange,' +
+        ' showCategorized: $showCategorized,' +
         '}';
   }
 
   StockState copyWith({
+    GlobalKey<FormState>? formKey,
     List<Transaction>? transactions,
     bool? sidebarLoading,
     bool? mainLoading,
@@ -109,8 +120,10 @@ class StockState {
     Stock? dropdownValue,
     String? dateRangeString,
     DateTimeRange? dateTimeRange,
+    bool? showCategorized,
   }) {
     return StockState(
+      formKey: formKey ?? this.formKey,
       transactions: transactions ?? this.transactions,
       sidebarLoading: sidebarLoading ?? this.sidebarLoading,
       mainLoading: mainLoading ?? this.mainLoading,
@@ -125,11 +138,13 @@ class StockState {
       dropdownValue: dropdownValue ?? this.dropdownValue,
       dateRangeString: dateRangeString ?? this.dateRangeString,
       dateTimeRange: dateTimeRange ?? this.dateTimeRange,
+      showCategorized: showCategorized ?? this.showCategorized,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'formKey': this.formKey,
       'transactions': this.transactions,
       'sidebarLoading': this.sidebarLoading,
       'mainLoading': this.mainLoading,
@@ -144,11 +159,13 @@ class StockState {
       'dropdownValue': this.dropdownValue,
       'dateRangeString': this.dateRangeString,
       'dateTimeRange': this.dateTimeRange,
+      'showCategorized': this.showCategorized,
     };
   }
 
   factory StockState.fromMap(Map<String, dynamic> map) {
     return StockState(
+      formKey: map['formKey'] as GlobalKey<FormState>,
       transactions: map['transactions'] as List<Transaction>,
       sidebarLoading: map['sidebarLoading'] as bool,
       mainLoading: map['mainLoading'] as bool,
@@ -163,6 +180,7 @@ class StockState {
       dropdownValue: map['dropdownValue'] as Stock,
       dateRangeString: map['dateRangeString'] as String,
       dateTimeRange: map['dateTimeRange'] as DateTimeRange,
+      showCategorized: map['showCategorized'] as bool,
     );
   }
 
@@ -172,10 +190,12 @@ class StockState {
 class InitialStockState extends StockState {
   InitialStockState()
       : super(
+            formKey: GlobalKey<FormState>(),
             sidebarExpanded: true,
             mainLoading: false,
             sidebarLoading: false,
             stocks: [],
             transactions: [],
-            dateRangeString: '');
+            dateRangeString: '',
+            showCategorized: true);
 }

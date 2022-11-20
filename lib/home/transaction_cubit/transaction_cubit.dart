@@ -1,5 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/enums/enums.dart';
 import '../../data/database/database.dart';
@@ -69,9 +69,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   void getTransactions() {
     try {
       repo.getTransactions();
-    } catch (e) {
-      print(e.toString());
-    }
+    } catch (e) {}
   }
 
   void dateChanged(DateTime date) {

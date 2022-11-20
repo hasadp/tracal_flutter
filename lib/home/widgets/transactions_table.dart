@@ -1,15 +1,9 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:tracal/data/database/database.dart';
 
-abstract class ColumnFields {
-  static const stockName = 'Stock';
-  static const stockAbbr = 'Abbr';
-  static const date = 'Date';
-  static const type = 'Type';
-  static const amount = 'Amount';
-}
+import '../../core/data/const.dart';
+import '../../core/utils/get_stock_details.dart';
 
 class TransactionsTable extends StatelessWidget {
   final List<Transaction> transactions;
@@ -18,27 +12,18 @@ class TransactionsTable extends StatelessWidget {
   const TransactionsTable(this.transactions, this.stocks, {Key? key})
       : super(key: key);
 
-  String getStockName(List<Stock> stocks, int id) {
-    for (Stock stock in stocks) {
-      if (stock.id == id) {
-        return stock.name;
-      }
-    }
-    throw Exception('');
-  }
-
-  String getStockAbbr(List<Stock> stocks, int id) {
-    for (Stock stock in stocks) {
-      if (stock.id == id) {
-        return stock.abbr;
-      }
-    }
-    throw Exception('');
-  }
-
   @override
   Widget build(BuildContext context) {
-    return DataTable2(
+    double sum = 0;
+    for (Transaction t in transactions) {
+      if (t.type == 'S') {
+        sum += t.amount;
+      } else {
+        sum -= t.amount;
+      }
+    }
+
+    return DataTable(
       columns: const [
         DataColumn(label: Text(ColumnFields.stockName)),
         DataColumn(label: Text(ColumnFields.stockAbbr)),
@@ -46,18 +31,34 @@ class TransactionsTable extends StatelessWidget {
         DataColumn(label: Text(ColumnFields.type)),
         DataColumn(label: Text(ColumnFields.amount)),
       ],
-      rows: List<DataRow>.generate(
-          transactions.length,
-          (index) => DataRow(cells: [
-                DataCell(
-                    Text(getStockName(stocks, transactions[index].stockId))),
-                DataCell(
-                    Text(getStockAbbr(stocks, transactions[index].stockId))),
-                DataCell(Text(formatDate(
-                    transactions[index].date, [mm, '-', dd, '-', yyyy]))),
-                DataCell(Text(transactions[index].type)),
-                DataCell(Text(transactions[index].amount.toString())),
-              ])),
+      rows: [
+        ...List<DataRow>.generate(
+            transactions.length,
+            (i) => DataRow(cells: [
+                  DataCell(Text(getStockName(stocks, transactions[i].stockId))),
+                  DataCell(Text(getStockAbbr(stocks, transactions[i].stockId))),
+                  DataCell(Text(formatDate(
+                      transactions[i].date, [mm, '-', dd, '-', yyyy]))),
+                  DataCell(Text(transactions[i].type)),
+                  DataCell(Text(
+                    transactions[i].amount.toString(),
+                    style: TextStyle(
+                        color: transactions[i].type == 'S'
+                            ? Colors.green
+                            : Colors.red),
+                  )),
+                ])),
+        DataRow(cells: [
+          const DataCell(Text('Total')),
+          const DataCell(Text('')),
+          const DataCell(Text('')),
+          const DataCell(Text('')),
+          DataCell(Text(
+            sum.toString(),
+            style: TextStyle(color: sum >= 0 ? Colors.green : Colors.red),
+          )),
+        ])
+      ],
     );
   }
 }

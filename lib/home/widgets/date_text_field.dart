@@ -24,6 +24,13 @@ class _DateRangeFieldState extends State<DateRangeField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      validator: (value) {
+        if (value == '') {
+          return 'Please Select Range';
+        } else {
+          return null;
+        }
+      },
       controller: tec,
       readOnly: true,
       decoration: InputDecoration(
@@ -33,7 +40,6 @@ class _DateRangeFieldState extends State<DateRangeField> {
             onPressed: ([bool mounted = true]) async {
               DateTimeRange? range = await showDateRangePicker(
                   context: context,
-                  initialEntryMode: DatePickerEntryMode.inputOnly,
                   firstDate: DateTime(1900),
                   lastDate: DateTime(DateTime.now().year + 1));
               if (range != null) {
