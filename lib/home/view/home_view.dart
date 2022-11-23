@@ -223,58 +223,92 @@ class Sidebar extends StatelessWidget {
                       title: const Text(Strings.addTrade),
                       content: Form(
                         key: state.formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (state.dropdownValue != null)
-                              DropdownButton(
-                                  value: state.dropdownValue,
-                                  items: state.stocks
-                                      .map((e) => DropdownMenuItem(
-                                          value: e, child: Text(e.name)))
-                                      .toList(),
-                                  onChanged: (value) =>
-                                      {cubit.dropdownItemChanged(value!)}),
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 150,
-                                  child: RadioListTile<TransactionEnum>(
-                                    value: TransactionEnum.buy,
-                                    groupValue: state.transactionEnum,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (state.dropdownValue != null)
+                                DropdownButtonFormField(
+                                    value: state.dropdownValue,
+                                    items: state.stocks
+                                        .map((e) => DropdownMenuItem(
+                                            value: e, child: Text(e.name)))
+                                        .toList(),
                                     onChanged: (value) =>
-                                        cubit.onTransactionTypeChanged(value),
-                                    title: const Text(Strings.buy),
+                                        {cubit.dropdownItemChanged(value!)}),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 150,
+                                    child: RadioListTile<TransactionEnum>(
+                                      value: TransactionEnum.buy,
+                                      groupValue: state.transactionEnum,
+                                      onChanged: (value) =>
+                                          cubit.onTransactionTypeChanged(value),
+                                      title: const Text(Strings.buy),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 150,
-                                  child: RadioListTile<TransactionEnum>(
-                                    value: TransactionEnum.sell,
-                                    groupValue: state.transactionEnum,
-                                    onChanged: (value) =>
-                                        cubit.onTransactionTypeChanged(value),
-                                    title: const Text(Strings.sell),
+                                  SizedBox(
+                                    width: 150,
+                                    child: RadioListTile<TransactionEnum>(
+                                      value: TransactionEnum.sell,
+                                      groupValue: state.transactionEnum,
+                                      onChanged: (value) =>
+                                          cubit.onTransactionTypeChanged(value),
+                                      title: const Text(Strings.sell),
+                                    ),
                                   ),
-                                ),
-                                const Spacer()
-                              ],
-                            ),
-                            TextFormField(
-                              decoration: const InputDecoration(
-                                  labelText: Strings.amount),
-                              keyboardType: TextInputType.number,
-                              onChanged: (value) => cubit.amountChanged(value),
-                              validator: (value) {
-                                if (double.tryParse(value!) != null) {
-                                  return null;
-                                } else {
-                                  return 'Invalid double';
-                                }
-                              },
-                            ),
-                            const DateField()
-                          ],
+                                  const Spacer()
+                                ],
+                              ),
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                    labelText: Strings.quantity),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) =>
+                                    cubit.onQuantityChanged(value),
+                                validator: FormValidators.validateInt,
+                              ),
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                    labelText: Strings.price),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) =>
+                                    cubit.onPriceChanged(value),
+                                validator: FormValidators.validateDouble,
+                              ),
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                    labelText: Strings.brokerage),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) =>
+                                    cubit.onBrokerageChanged(value),
+                                validator: FormValidators.validateDouble,
+                              ),
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                    labelText: Strings.cvt),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) => cubit.onCVTChanged(value),
+                                validator: FormValidators.validateDouble,
+                              ),
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                    labelText: Strings.wht),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) => cubit.onWHTChanged(value),
+                                validator: FormValidators.validateDouble,
+                              ),
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                    labelText: Strings.fed),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) => cubit.onFEDChanged(value),
+                                validator: FormValidators.validateDouble,
+                              ),
+                              const DateField()
+                            ],
+                          ),
                         ),
                       ),
                       actions: [
@@ -288,7 +322,9 @@ class Sidebar extends StatelessWidget {
                               if (state.formKey.currentState!.validate()) {
                                 cubit.addTransaction();
                                 Navigator.pop(context);
-                                bloc.add(StockLoadTransactions());
+                                if (bloc.state.dateTimeRange != null) {
+                                  bloc.add(StockLoadTransactions());
+                                }
                               }
                             },
                             child: const Text(Strings.add))
@@ -298,5 +334,32 @@ class Sidebar extends StatelessWidget {
                 ),
               ));
         });
+  }
+}
+
+class FormValidators {
+  static String? validateDouble(String? value) {
+    if (double.tryParse(value!) == null) {
+      return 'Invalid value';
+    } else {
+      return null;
+    }
+  }
+
+  FormValidators._();
+  static String? validateInt(String? value) {
+    if (int.tryParse(value!) == null) {
+      return 'Invalid value';
+    } else {
+      return null;
+    }
+  }
+
+  String? validateNoNull(String? value) {
+    if (value == null) {
+      return 'Invalid';
+    } else {
+      return null;
+    }
   }
 }

@@ -42,7 +42,6 @@ class StockBloc extends Bloc<StockEvent, StockState> {
   _onStockAddPressed(event, emit) async {
     try {
       await repo.addStock(event.stock);
-      add(StockLoadStocks());
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }

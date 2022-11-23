@@ -29,14 +29,6 @@ class TransactionsGrid extends StatelessWidget {
             title: ColumnFields.date,
             field: ColumnFields.date,
             type: PlutoColumnType.date()),
-        PlutoColumn(
-            title: ColumnFields.type,
-            field: ColumnFields.type,
-            type: PlutoColumnType.text()),
-        PlutoColumn(
-            title: ColumnFields.amount,
-            field: ColumnFields.amount,
-            type: PlutoColumnType.number()),
       ],
       rows: List<PlutoRow>.generate(
           transactions.length,
@@ -48,9 +40,6 @@ class TransactionsGrid extends StatelessWidget {
                 ColumnFields.date: PlutoCell(
                     value: formatDate(
                         transactions[i].date, [mm, '-', dd, '-', yyyy])),
-                ColumnFields.type: PlutoCell(value: transactions[i].type),
-                ColumnFields.amount:
-                    PlutoCell(value: transactions[i].amount.toString()),
               })),
     );
   }

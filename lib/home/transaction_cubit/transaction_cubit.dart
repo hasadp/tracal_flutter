@@ -13,11 +13,16 @@ class TransactionCubit extends Cubit<TransactionState> {
   TransactionCubit()
       : super(
           TransactionState(
+              price: '',
               formKey: GlobalKey<FormState>(),
-              amountString: '',
               stocks: [],
               error: '',
-              transactionEnum: TransactionEnum.buy),
+              transactionEnum: TransactionEnum.buy,
+              qty: '',
+              brokerage: '',
+              fed: '',
+              cvt: '',
+              wht: ''),
         );
 
   Future<void> loadStocks() async {
@@ -32,10 +37,6 @@ class TransactionCubit extends Cubit<TransactionState> {
     }
   }
 
-  void amountChanged(String amount) {
-    emit(state.copyWith(amountString: amount));
-  }
-
   void onTransactionTypeChanged(TransactionEnum? value) {
     emit(state.copyWith(transactionEnum: value));
   }
@@ -46,12 +47,31 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   void addTransaction() async {
     try {
+      final quantity = int.parse(state.qty);
+      double price = double.parse(state.price);
+      final brokerage = double.parse(state.brokerage);
+      final wht = double.parse(state.wht);
+      final cvt = double.parse(state.cvt);
+      final fed = double.parse(state.fed);
+      double net = 0;
+      if (state.transactionEnum == TransactionEnum.sell) {
+        net = (-price * quantity) + brokerage + wht + cvt + fed;
+      } else {
+        net = (price * quantity) + brokerage + wht + cvt + fed;
+      }
+
       final transaction = Transaction(
           id: 0,
           stockId: state.dropdownValue!.id,
           date: state.time!,
-          amount: double.parse(state.amountString!),
-          type: state.transactionEnum!.type);
+          type: state.transactionEnum!.type,
+          quantity: quantity,
+          price: price,
+          brokerage: brokerage,
+          wht: wht,
+          cvt: cvt,
+          net: net,
+          fed: fed);
       repo.addTransaction(transaction);
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
@@ -62,14 +82,20 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(error: ''));
   }
 
-  test() {
-    emit(state.copyWith(amountString: '${state.amountString!}  abc'));
+  void onWHTChanged(String value) {
+    emit(state.copyWith(wht: value));
   }
 
-  void getTransactions() {
-    try {
-      repo.getTransactions();
-    } catch (e) {}
+  void onPriceChanged(String price) {
+    emit(state.copyWith(price: price));
+  }
+
+  void onQuantityChanged(String qty) {
+    emit(state.copyWith(qty: qty));
+  }
+
+  void onBrokerageChanged(String value) {
+    emit(state.copyWith(brokerage: value));
   }
 
   void dateChanged(DateTime date) {
@@ -82,5 +108,13 @@ class TransactionCubit extends Cubit<TransactionState> {
     } else {
       return null;
     }
+  }
+
+  onCVTChanged(String value) {
+    emit(state.copyWith(cvt: value));
+  }
+
+  onFEDChanged(String value) {
+    emit(state.copyWith(fed: value));
   }
 }

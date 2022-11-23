@@ -26,7 +26,16 @@ abstract class Strings {
   static const amount = 'Amount';
 
   static const buy = 'Buy';
+
   static const sell = 'Sell';
 
   static const date = 'Date';
+
+  static const quantity = 'Quantity';
+
+  static const price = 'Price';
+  static const brokerage = 'Brokerage';
+  static const cvt = 'CVT';
+  static const wht = 'WHT';
+  static const fed = 'FED';
 }

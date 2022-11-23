@@ -20,7 +20,7 @@ class Database extends _$Database implements Api {
   static Database get instance => _instance;
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -30,9 +30,9 @@ class Database extends _$Database implements Api {
       if (kDebugMode) {
         print('Database from: $from Database to: $to');
       }
-      m.deleteTable('stocks');
-      m.deleteTable('transactions');
-      m.createAll();
+      // m.deleteTable('stocks');
+      //m.deleteTable('transactions');
+      //m.createAll();
     });
   }
 
@@ -52,10 +52,16 @@ class Database extends _$Database implements Api {
   @override
   Future<void> addTransaction(Transaction transaction) async =>
       into(transactions).insert(TransactionsCompanion.insert(
+          brokerage: transaction.brokerage,
+          wht: transaction.wht,
+          cvt: transaction.cvt,
           stockId: transaction.stockId,
           date: transaction.date,
-          amount: transaction.amount,
-          type: transaction.type));
+          quantity: transaction.quantity,
+          type: transaction.type,
+          price: transaction.price,
+          net: transaction.net,
+          fed: transaction.fed));
 
   @override
   Future<void> editTransaction(Transaction transaction) {

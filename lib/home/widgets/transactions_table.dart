@@ -17,9 +17,9 @@ class TransactionsTable extends StatelessWidget {
     double sum = 0;
     for (Transaction t in transactions) {
       if (t.type == 'S') {
-        sum += t.amount;
+        sum += t.net;
       } else {
-        sum -= t.amount;
+        sum -= t.net;
       }
     }
 
@@ -28,8 +28,8 @@ class TransactionsTable extends StatelessWidget {
         DataColumn(label: Text(ColumnFields.stockName)),
         DataColumn(label: Text(ColumnFields.stockAbbr)),
         DataColumn(label: Text(ColumnFields.date)),
-        DataColumn(label: Text(ColumnFields.type)),
-        DataColumn(label: Text(ColumnFields.amount)),
+        DataColumn(label: Text(ColumnFields.brokerage)),
+        DataColumn(label: Text(ColumnFields.net)),
       ],
       rows: [
         ...List<DataRow>.generate(
@@ -41,7 +41,7 @@ class TransactionsTable extends StatelessWidget {
                       transactions[i].date, [mm, '-', dd, '-', yyyy]))),
                   DataCell(Text(transactions[i].type)),
                   DataCell(Text(
-                    transactions[i].amount.toString(),
+                    transactions[i].net.toString(),
                     style: TextStyle(
                         color: transactions[i].type == 'S'
                             ? Colors.green
