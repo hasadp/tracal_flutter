@@ -49,9 +49,12 @@ class StockBloc extends Bloc<StockEvent, StockState> {
 
   _onStockLoadStocks(event, emit) async {
     final stocks = await repo.getStocks();
+    final transactions = await repo.getTransactions();
     if (stocks.isNotEmpty) {
       emit(state.copyWith(
-          stocks: stocks, dropdownValue: state.dropdownValue ?? stocks[0]));
+          stocks: stocks,
+          transactions: transactions,
+          dropdownValue: state.dropdownValue ?? stocks[0]));
     }
   }
 

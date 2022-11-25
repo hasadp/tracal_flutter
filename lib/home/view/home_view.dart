@@ -9,7 +9,6 @@ import '../../data/database/database.dart';
 import '../stock_bloc/stock_bloc.dart';
 import '../stock_bloc/stock_state.dart';
 import '../widgets/categorical_table._window.dart';
-import '../widgets/transactions_table.dart';
 import '../widgets/widgets.dart';
 
 class HomePage extends StatelessWidget {
@@ -75,12 +74,13 @@ class HomeView extends StatelessWidget {
                         const SizedBox(
                           height: 10,
                         ),
-                        state.showCategorized
-                            ? CategoricalWindows(
-                                transactions: state.transactions,
-                                stocks: state.stocks)
-                            : TransactionsTable(
-                                state.transactions, state.stocks)
+                        //state.showCategorized
+                        // ?
+                        CategoricalWindows(
+                            transactions: state.transactions,
+                            stocks: state.stocks)
+                        //: TransactionsTable(
+                        //  state.transactions, state.stocks)
                       ],
                     ),
                   ))
@@ -127,11 +127,11 @@ class Sidebar extends StatelessWidget {
                         onPressed: () => _onAddStockPressed(context),
                         child: const Text(Strings.addStock)),
                     const Divider(height: 40, thickness: 3),
-                    CheckboxListTile(
+                    /*CheckboxListTile(
                         title: const Text('Stock Wise Display'),
                         value: state.showCategorized,
                         onChanged: (value) =>
-                            bloc.add(StockShowCategorized(value!))),
+                            bloc.add(StockShowCategorized(value!))),*/
                     if (state.stocks.isNotEmpty)
                       DropdownButton(
                           value: state.dropdownValue,
@@ -318,7 +318,23 @@ class Sidebar extends StatelessWidget {
                             },
                             child: const Text(Strings.close)),
                         ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              if (state.dropdownValue == null) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('OK'))
+                                          ],
+                                          content: const Text(
+                                              'Please add stock first'),
+                                        ));
+                                return;
+                              }
                               if (state.formKey.currentState!.validate()) {
                                 cubit.addTransaction();
                                 Navigator.pop(context);
@@ -347,6 +363,7 @@ class FormValidators {
   }
 
   FormValidators._();
+
   static String? validateInt(String? value) {
     if (int.tryParse(value!) == null) {
       return 'Invalid value';
