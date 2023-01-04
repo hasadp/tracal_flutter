@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-import './stock_model.dart';
+import 'stock_model.dart';
 
 class Transactions extends Table {
   IntColumn get id => integer().autoIncrement()();
