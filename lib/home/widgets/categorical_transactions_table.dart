@@ -1,6 +1,6 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-import 'package:tracal/home/widgets/categorical_data.dart';
+import 'package:tracal/data/models/categorical_data.dart';
 
 import '../../core/data/const.dart';
 
@@ -30,7 +30,7 @@ class CategoricalTransactionTable extends StatelessWidget {
             thickness: 10,
             controller: sc,
             child: SingleChildScrollView(
-             controller: sc,
+              controller: sc,
               scrollDirection: Axis.horizontal,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
@@ -50,7 +50,8 @@ class CategoricalTransactionTable extends StatelessWidget {
                   ...List<DataRow>.generate(
                       data.transactions.length,
                       (index) => DataRow(cells: [
-                            DataCell(Text(formatDate(data.transactions[index].date,
+                            DataCell(Text(formatDate(
+                                data.transactions[index].date,
                                 [mm, '-', dd, '-', yyyy]))),
                             DataCell(Text(data.transactions[index].type == 'B'
                                 ? data.transactions[index].quantity.toString()
@@ -58,7 +59,8 @@ class CategoricalTransactionTable extends StatelessWidget {
                             DataCell(Text(data.transactions[index].type == 'S'
                                 ? data.transactions[index].quantity.toString()
                                 : '')),
-                            DataCell(Text(data.transactions[index].price.toString())),
+                            DataCell(Text(
+                                data.transactions[index].price.toString())),
                             DataCell(Text(data.transactions[index].type == 'B'
                                 ? (data.transactions[index].quantity *
                                         data.transactions[index].price)
@@ -69,12 +71,16 @@ class CategoricalTransactionTable extends StatelessWidget {
                                         data.transactions[index].price)
                                     .toString()
                                 : '')),
+                            DataCell(Text(
+                                data.transactions[index].brokerage.toString())),
                             DataCell(
-                                Text(data.transactions[index].brokerage.toString())),
-                            DataCell(Text(data.transactions[index].cvt.toString())),
-                            DataCell(Text(data.transactions[index].wht.toString())),
-                            DataCell(Text(data.transactions[index].fed.toString())),
-                            DataCell(Text(data.transactions[index].net.toString())),
+                                Text(data.transactions[index].cvt.toString())),
+                            DataCell(
+                                Text(data.transactions[index].wht.toString())),
+                            DataCell(
+                                Text(data.transactions[index].fed.toString())),
+                            DataCell(
+                                Text(data.transactions[index].net.toString())),
                           ])),
                   DataRow(cells: [
                     const DataCell(

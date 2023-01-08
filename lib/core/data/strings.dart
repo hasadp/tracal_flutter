@@ -39,4 +39,5 @@ abstract class Strings {
   static const wht = 'WHT';
   static const fed = 'FED';
   static const addStockError = "Stock name and abbr can't be null";
+  static const searchErrorHome = 'Error While Loading';
 }

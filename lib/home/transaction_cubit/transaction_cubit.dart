@@ -45,7 +45,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(dropdownValue: stock));
   }
 
-  void addTransaction() async {
+  Future<void> addTransaction() async {
     try {
       final quantity = int.parse(state.qty.trim());
       double price = double.parse(state.price.trim());
@@ -72,7 +72,7 @@ class TransactionCubit extends Cubit<TransactionState> {
           cvt: cvt,
           net: net,
           fed: fed);
-      repo.addTransaction(transaction);
+      await repo.addTransaction(transaction);
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -98,7 +98,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(brokerage: value));
   }
 
-  void dateChanged(DateTime date) {
+  void onDateChanged(DateTime date) {
     emit(state.copyWith(time: date));
   }
 

@@ -10,3 +10,9 @@ enum TransactionEnum {
     }
   }
 }
+
+enum DialogType{
+  stock,
+  trade,
+  error
+}

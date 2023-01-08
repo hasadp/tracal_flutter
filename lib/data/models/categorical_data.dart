@@ -1,4 +1,4 @@
-import '../../data/database/database.dart';
+import '../database/database.dart';
 
 class CategoricalData {
   final String stockName;
@@ -15,7 +15,7 @@ class CategoricalData {
   final double fed;
 
   static List<CategoricalData> categoricalList(
-      List<Transaction> transactions, List<Stock> stocks) {
+      {required List<Transaction> transactions, required List<Stock> stocks}) {
     List<CategoricalData> listData = [];
 
     for (Stock stock in stocks) {

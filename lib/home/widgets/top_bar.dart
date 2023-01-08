@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tracal/core/data/strings.dart';
-import 'package:tracal/home/stock_bloc/stock_bloc.dart';
+import 'package:tracal/home/home_bloc/home_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracal/home/widgets/date_range_field.dart';
-import 'package:tracal/home/hooks/use_add_stock_dialog.dart';
-import 'package:tracal/home/hooks/use_add_trade_dialog.dart';
 
 class TopBar extends StatelessWidget {
   const TopBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<StockBloc>().state;
-    final bloc = context.read<StockBloc>();
+    final bloc = context.read<HomeBloc>();
 
     return Container(
       decoration: BoxDecoration(
@@ -30,32 +27,33 @@ class TopBar extends StatelessWidget {
                 width: 10,
               ),
               OutlinedButton(
-                onPressed: () {
-                  useAddTradeDialog(context, bloc);
-                },
+                onPressed: () =>
+                    bloc.add(HomeAddTradePressed(context: context)),
                 child: const Text(Strings.addTrade),
               ),
               const SizedBox(
                 width: 10,
               ),
               OutlinedButton(
-                onPressed: () => useAddStockDialog(context),
+                onPressed: () =>
+                    bloc.add(HomeAddStockPressed(context: context)),
                 child: const Text(Strings.addStock),
               ),
               const Spacer(),
-              const SizedBox(
+              SizedBox(
                 width: 250,
-                child: DateRangeField(),
+                child: DateRangeField(
+                  onChanged: (DateTimeRange dateTimeRange) {
+                    bloc.add(HomeSearchDateRangeChanged(
+                        dateTimeRange: dateTimeRange));
+                  },
+                ),
               ),
               const SizedBox(
                 width: 10,
               ),
               ElevatedButton(
-                  onPressed: () {
-                    if (state.formKey.currentState!.validate()) {
-                      bloc.add(StockLoadTransactions());
-                    }
-                  },
+                  onPressed: () => bloc.add(HomeSearchPressed()),
                   child: const Text(Strings.search)),
             ],
           ),
