@@ -5,21 +5,21 @@ abstract class Strings {
 
   static const addStock = 'Add Stock';
 
-  static const String cancel = 'Cancel';
+  static const cancel = 'Cancel';
 
   static const stockName = 'Stock Name';
 
   static const stockAbbr = 'Stock Abbr';
 
-  static const String databaseError = 'Database Error';
+  static const databaseError = 'Database Error';
 
-  static const String ok = 'OK';
+  static const ok = 'OK';
 
   static const close = 'Close';
 
-  static const String addTrade = 'Add Trade';
+  static const addTrade = 'Add Trade';
 
-  static const String error = 'Error';
+  static const error = 'Error';
 
   static const dateRange = 'Date Range';
 
@@ -38,4 +38,6 @@ abstract class Strings {
   static const cvt = 'CVT';
   static const wht = 'WHT';
   static const fed = 'FED';
+  static const addStockError = "Stock name and abbr can't be null";
+  static const searchErrorHome = 'Error While Loading';
 }
