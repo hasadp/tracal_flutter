@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -24,7 +22,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   void _onHomeAddStockPressed(event, emit) {
-    useAddStockDialog(event.context);
+    useAddStockDialog(event.context, _homeRepository);
   }
 
   void _onHomeAddTradePressed(event, emit) async {

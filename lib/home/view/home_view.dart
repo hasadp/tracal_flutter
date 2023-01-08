@@ -4,8 +4,6 @@ import 'package:tracal/core/data/strings.dart';
 import 'package:tracal/home/home_bloc/home_bloc.dart';
 import 'package:tracal/home/home_repository.dart';
 import 'package:tracal/home/hooks/use_error_dialog.dart';
-import 'package:tracal/home/stock_bloc/stock_bloc.dart';
-import 'package:tracal/home/stock_bloc/stock_state.dart';
 import 'package:tracal/home/widgets/categorical_table_window.dart';
 import 'package:tracal/home/widgets/top_bar.dart';
 
@@ -35,7 +33,6 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<HomeBloc>().state;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
