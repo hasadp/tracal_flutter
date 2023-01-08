@@ -10,7 +10,7 @@ void useAddStockDialog(BuildContext context) async {
   await showDialog(
       context: context,
       builder: (_) => AlertDialog(
-            title: const Text('Add Stock'),
+            title: const Text(Strings.addStock),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -34,10 +34,10 @@ void useAddStockDialog(BuildContext context) async {
                   onPressed: () {
                     Navigator.pop(context);
                     if (stockAbbrFieldText == '' && stockNameFieldText == '') {
-                      context
-                          .read<StockBloc>()
-                          .add(StockError("Stock name and abbr can't be null"));
-                    }
+                      context.read<StockBloc>().add(
+                            StockError(Strings.addStockError),
+                          );
+                    } else {
                     context.read<StockBloc>().add(
                           StockAddPressed(
                             Stock(
@@ -46,6 +46,7 @@ void useAddStockDialog(BuildContext context) async {
                                 abbr: stockAbbrFieldText),
                           ),
                         );
+                    }
                   },
                   child: const Text(Strings.add)),
             ],

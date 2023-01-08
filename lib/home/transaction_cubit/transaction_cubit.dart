@@ -47,12 +47,12 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   void addTransaction() async {
     try {
-      final quantity = int.parse(state.qty);
-      double price = double.parse(state.price);
-      final brokerage = double.parse(state.brokerage);
-      final wht = double.parse(state.wht);
-      final cvt = double.parse(state.cvt);
-      final fed = double.parse(state.fed);
+      final quantity = int.parse(state.qty.trim());
+      double price = double.parse(state.price.trim());
+      final brokerage = double.parse(state.brokerage.trim());
+      final wht = double.parse(state.wht.trim());
+      final cvt = double.parse(state.cvt.trim());
+      final fed = double.parse(state.fed.trim());
       double net = 0;
       if (state.transactionEnum == TransactionEnum.sell) {
         net = (-price * quantity) + brokerage + wht + cvt + fed;
