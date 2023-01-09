@@ -17,6 +17,30 @@ class DateRangeField extends StatefulWidget {
 class _DateRangeFieldState extends State<DateRangeField> {
   TextEditingController tec = TextEditingController();
 
+  void _onPressed() async {
+    DateTimeRange? range = await showDateRangePicker(
+        context: context,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(DateTime.now().year + 1));
+    if (range != null) {
+      widget.onChanged(range);
+      final startDate = formatDate(range.start, [mm, '/', dd, '/', yyyy]);
+      final endDate = formatDate(range.end, [mm, '/', dd, '/', yyyy]);
+      final dateString = '$startDate - $endDate';
+      setState(() {
+        tec.text = dateString;
+      });
+    }
+  }
+
+  String? _validator(String? value) {
+    if (value == '') {
+      return 'Please Select Range';
+    } else {
+      return null;
+    }
+  }
+
   @override
   void dispose() {
     tec.dispose();
@@ -26,37 +50,14 @@ class _DateRangeFieldState extends State<DateRangeField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      validator: (value) {
-        if (value == '') {
-          return 'Please Select Range';
-        } else {
-          return null;
-        }
-      },
+      onTap: _onPressed,
+      validator: _validator,
       controller: tec,
       readOnly: true,
       decoration: InputDecoration(
         labelText: Strings.dateRange,
         icon: IconButton(
-          icon: const Icon(Icons.date_range_outlined),
-          onPressed: ([bool mounted = true]) async {
-            DateTimeRange? range = await showDateRangePicker(
-                context: context,
-                firstDate: DateTime(1900),
-                lastDate: DateTime(DateTime.now().year + 1));
-            if (range != null) {
-              if (!mounted) return;
-              widget.onChanged(range);
-              final startDate =
-                  formatDate(range.start, [mm, '/', dd, '/', yyyy]);
-              final endDate = formatDate(range.end, [mm, '/', dd, '/', yyyy]);
-              final dateString = '$startDate - $endDate';
-              setState(() {
-                tec.text = dateString;
-              });
-            }
-          },
-        ),
+            icon: const Icon(Icons.date_range_outlined), onPressed: _onPressed),
       ),
     );
   }
