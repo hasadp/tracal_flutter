@@ -11,8 +11,4 @@ enum TransactionEnum {
   }
 }
 
-enum DialogType{
-  stock,
-  trade,
-  error
-}
+enum DialogType { stock, trade, error }

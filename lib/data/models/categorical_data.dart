@@ -14,8 +14,10 @@ class CategoricalData {
   final double wht;
   final double fed;
 
-  static List<CategoricalData> categoricalList(
-      {required List<Transaction> transactions, required List<Stock> stocks}) {
+  static List<CategoricalData> categoricalList({
+    required List<Transaction> transactions,
+    required List<Stock> stocks,
+  }) {
     List<CategoricalData> listData = [];
 
     for (Stock stock in stocks) {
@@ -47,7 +49,8 @@ class CategoricalData {
         }
       }
 
-      listData.add(CategoricalData(
+      listData.add(
+        CategoricalData(
           stockName: stock.name,
           stockAbbr: stock.abbr,
           transactions: listTransactions,
@@ -59,7 +62,9 @@ class CategoricalData {
           brokerage: brokerage,
           cvt: cvt,
           wht: wht,
-          fed: fed));
+          fed: fed,
+        ),
+      );
     }
     return listData;
   }

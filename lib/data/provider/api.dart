@@ -2,7 +2,9 @@ import '../database/database.dart';
 
 abstract class Api {
   Future<List<Transaction>> getTransactionsBetweenDates(
-      DateTime startDate, DateTime endDate);
+    DateTime startDate,
+    DateTime endDate,
+  );
 
   Future<List<Transaction>> getAllTransactions(int limit, int page);
   Future<void> addTransaction(Transaction transaction);

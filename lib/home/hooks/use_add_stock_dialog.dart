@@ -27,24 +27,28 @@ Future<void> useAddStockDialog(BuildContext context, WidgetRef ref) async {
       ),
       actions: [
         OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(Strings.cancel)),
+          onPressed: () => Navigator.pop(context),
+          child: const Text(Strings.cancel),
+        ),
         ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              if (stockAbbrFieldText == '' && stockNameFieldText == '') {
-              } else {
-                await ref.read(homeRepositoryProvider).addStock(
-                  Stock(
-                    id: 0,
-                    name: stockNameFieldText.trim(),
-                    abbr: stockAbbrFieldText.toUpperCase().trim(),
-                  ),
-                );
-                ref.invalidate(categoricalDataProvider);
-              }
-            },
-            child: const Text(Strings.add)),
+          onPressed: () async {
+            Navigator.pop(context);
+            if (stockAbbrFieldText == '' && stockNameFieldText == '') {
+            } else {
+              await ref
+                  .read(homeRepositoryProvider)
+                  .addStock(
+                    Stock(
+                      id: 0,
+                      name: stockNameFieldText.trim(),
+                      abbr: stockAbbrFieldText.toUpperCase().trim(),
+                    ),
+                  );
+              ref.invalidate(categoricalDataProvider);
+            }
+          },
+          child: const Text(Strings.add),
+        ),
       ],
     ),
   );

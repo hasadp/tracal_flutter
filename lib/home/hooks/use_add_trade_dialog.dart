@@ -8,12 +8,16 @@ import 'package:tracal/core/enums/enums.dart';
 import 'package:tracal/data/database/database.dart';
 import 'package:tracal/home/providers/transaction_form_provider.dart';
 
-Future<void> useAddTradeDialog(BuildContext context, WidgetRef parentRef) async {
+Future<void> useAddTradeDialog(
+  BuildContext context,
+  WidgetRef parentRef,
+) async {
   return await showDialog(
-      context: context,
-      builder: (context) {
-        return const AddTradeDialog();
-      });
+    context: context,
+    builder: (context) {
+      return const AddTradeDialog();
+    },
+  );
 }
 
 class AddTradeDialog extends ConsumerStatefulWidget {
@@ -41,22 +45,31 @@ class _AddTradeDialogState extends ConsumerState<AddTradeDialog> {
             children: [
               if (state.stocks.isNotEmpty)
                 FormBuilderDropdown<Stock>(
-                    name: 'stock',
-                    decoration: const InputDecoration(labelText: 'Stock'),
-                    initialValue: state.dropdownValue,
-                    items: state.stocks
-                        .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) notifier.dropdownItemChanged(value);
-                    }),
+                  name: 'stock',
+                  decoration: const InputDecoration(labelText: 'Stock'),
+                  initialValue: state.dropdownValue,
+                  items: state.stocks
+                      .map(
+                        (e) => DropdownMenuItem(value: e, child: Text(e.name)),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) notifier.dropdownItemChanged(value);
+                  },
+                ),
               FormBuilderRadioGroup<TransactionEnum>(
                 name: 'type',
                 initialValue: state.transactionEnum,
                 decoration: const InputDecoration(border: InputBorder.none),
                 options: const [
-                  FormBuilderFieldOption(value: TransactionEnum.buy, child: Text(Strings.buy)),
-                  FormBuilderFieldOption(value: TransactionEnum.sell, child: Text(Strings.sell)),
+                  FormBuilderFieldOption(
+                    value: TransactionEnum.buy,
+                    child: Text(Strings.buy),
+                  ),
+                  FormBuilderFieldOption(
+                    value: TransactionEnum.sell,
+                    child: Text(Strings.sell),
+                  ),
                 ],
                 onChanged: notifier.onTransactionTypeChanged,
               ),
@@ -132,37 +145,40 @@ class _AddTradeDialogState extends ConsumerState<AddTradeDialog> {
       ),
       actions: [
         OutlinedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text(Strings.close)),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text(Strings.close),
+        ),
         ElevatedButton(
-            onPressed: () async {
-              if (state.dropdownValue == null) {
-                showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                          actions: [
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('OK'))
-                          ],
-                          content: const Text('Please add stock first'),
-                        ));
-                return;
+          onPressed: () async {
+            if (state.dropdownValue == null) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                  content: const Text('Please add stock first'),
+                ),
+              );
+              return;
+            }
+            if (_formKey.currentState?.saveAndValidate() ?? false) {
+              await notifier.addTransaction();
+              if (context.mounted) {
+                Navigator.pop(context);
               }
-              if (_formKey.currentState?.saveAndValidate() ?? false) {
-                await notifier.addTransaction();
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              }
-            },
-            child: const Text(Strings.add))
+            }
+          },
+          child: const Text(Strings.add),
+        ),
       ],
     );
   }
 }
-
