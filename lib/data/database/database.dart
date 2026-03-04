@@ -24,21 +24,21 @@ class Database extends _$Database implements Api {
 
   @override
   MigrationStrategy get migration {
-    return MigrationStrategy(onCreate: (Migrator m) async {
-      await m.createAll();
-    }, onUpgrade: (Migrator m, int from, int to) async {
-      if (kDebugMode) {
-        print('Database from: $from Database to: $to');
-      }
-      // m.deleteTable('stocks');
-      //m.deleteTable('transactions');
-      //m.createAll();
-    });
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (kDebugMode) {
+          print('Database from: $from Database to: $to');
+        }
+      },
+    );
   }
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
-      final dbFolder = await getApplicationDocumentsDirectory();
+      final dbFolder = await getApplicationSupportDirectory();
       final file = File(p.join(dbFolder.path, 'db.sqlite'));
 
       return NativeDatabase(file, logStatements: true);
@@ -46,12 +46,14 @@ class Database extends _$Database implements Api {
   }
 
   @override
-  Future<int> addStock(Stock stock) async => into(stocks)
-      .insert(StocksCompanion.insert(name: stock.name, abbr: stock.abbr));
+  Future<int> addStock(Stock stock) async => into(
+    stocks,
+  ).insert(StocksCompanion.insert(name: stock.name, abbr: stock.abbr));
 
   @override
   Future<void> addTransaction(Transaction transaction) async =>
-      into(transactions).insert(TransactionsCompanion.insert(
+      into(transactions).insert(
+        TransactionsCompanion.insert(
           brokerage: transaction.brokerage,
           wht: transaction.wht,
           cvt: transaction.cvt,
@@ -61,7 +63,9 @@ class Database extends _$Database implements Api {
           type: transaction.type,
           price: transaction.price,
           net: transaction.net,
-          fed: transaction.fed));
+          fed: transaction.fed,
+        ),
+      );
 
   @override
   Future<void> editTransaction(Transaction transaction) {
@@ -74,8 +78,11 @@ class Database extends _$Database implements Api {
 
   @override
   Future<List<Transaction>> getTransactionsBetweenDates(
-      DateTime startDate, DateTime endDate) async {
-    return ((select(transactions)..where((tbl) => tbl.date.isBetweenValues(startDate, endDate)))
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    return ((select(transactions)
+            ..where((tbl) => tbl.date.isBetweenValues(startDate, endDate)))
           ..orderBy([(tbl) => OrderingTerm.desc(tbl.date)]))
         .get();
   }
