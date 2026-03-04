@@ -9,8 +9,7 @@ class TransactionsTable extends StatelessWidget {
   final List<Transaction> transactions;
   final List<Stock> stocks;
 
-  const TransactionsTable(this.transactions, this.stocks, {Key? key})
-      : super(key: key);
+  const TransactionsTable(this.transactions, this.stocks, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,31 +32,44 @@ class TransactionsTable extends StatelessWidget {
       ],
       rows: [
         ...List<DataRow>.generate(
-            transactions.length,
-            (i) => DataRow(cells: [
-                  DataCell(Text(getStockName(stocks, transactions[i].stockId))),
-                  DataCell(Text(getStockAbbr(stocks, transactions[i].stockId))),
-                  DataCell(Text(formatDate(
-                      transactions[i].date, [mm, '-', dd, '-', yyyy]))),
-                  DataCell(Text(transactions[i].type)),
-                  DataCell(Text(
-                    transactions[i].net.toString(),
-                    style: TextStyle(
-                        color: transactions[i].type == 'S'
-                            ? Colors.green
-                            : Colors.red),
-                  )),
-                ])),
-        DataRow(cells: [
-          const DataCell(Text('Total')),
-          const DataCell(Text('')),
-          const DataCell(Text('')),
-          const DataCell(Text('')),
-          DataCell(Text(
-            sum.toString(),
-            style: TextStyle(color: sum >= 0 ? Colors.green : Colors.red),
-          )),
-        ])
+          transactions.length,
+          (i) => DataRow(
+            cells: [
+              DataCell(Text(getStockName(stocks, transactions[i].stockId))),
+              DataCell(Text(getStockAbbr(stocks, transactions[i].stockId))),
+              DataCell(
+                Text(
+                  formatDate(transactions[i].date, [mm, '-', dd, '-', yyyy]),
+                ),
+              ),
+              DataCell(Text(transactions[i].type)),
+              DataCell(
+                Text(
+                  transactions[i].net.toString(),
+                  style: TextStyle(
+                    color: transactions[i].type == 'S'
+                        ? Colors.green
+                        : Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        DataRow(
+          cells: [
+            const DataCell(Text('Total')),
+            const DataCell(Text('')),
+            const DataCell(Text('')),
+            const DataCell(Text('')),
+            DataCell(
+              Text(
+                sum.toString(),
+                style: TextStyle(color: sum >= 0 ? Colors.green : Colors.red),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
