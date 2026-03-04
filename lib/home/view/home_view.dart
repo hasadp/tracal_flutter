@@ -28,14 +28,11 @@ class HomeView extends ConsumerWidget {
           children: [
             stateList.when(
               data: (list) => SingleChildScrollView(
-                child: CategoricalWindows(
-                  categoricalDataList: list,
-                ),
+                child: CategoricalWindows(categoricalDataList: list),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(
-                child: Text(Strings.searchErrorHome),
-              ),
+              error: (err, stack) =>
+                  Center(child: Text(Strings.searchErrorHome)),
             ),
             const TopBar(),
           ],

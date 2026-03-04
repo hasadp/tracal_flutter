@@ -119,14 +119,14 @@ class TransactionFormNotifier extends Notifier<TransactionFormState> {
 
   Future<void> addTransaction() async {
     if (state.dropdownValue == null) return;
-    
+
     final type = state.transactionEnum == TransactionEnum.buy ? 'B' : 'S';
     final fees = state.brokerage + state.cvt + state.wht + state.fed;
     final value = state.price * state.quantity;
-    
+
     // Usually for buy net = value + fees, for sell net = value - fees
     final netValue = type == 'B' ? value + fees : value - fees;
-    
+
     final transaction = Transaction(
       id: 0,
       stockId: state.dropdownValue!.id,
@@ -145,6 +145,7 @@ class TransactionFormNotifier extends Notifier<TransactionFormState> {
   }
 }
 
-final transactionFormProvider = NotifierProvider<TransactionFormNotifier, TransactionFormState>(() {
-  return TransactionFormNotifier();
-});
+final transactionFormProvider =
+    NotifierProvider<TransactionFormNotifier, TransactionFormState>(() {
+      return TransactionFormNotifier();
+    });
