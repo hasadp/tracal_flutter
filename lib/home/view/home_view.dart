@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracal/core/data/strings.dart';
 import 'package:tracal/home/widgets/top_bar.dart';
 import 'package:tracal/home/view/transactions_view.dart';
 import 'package:tracal/home/view/dashboard_view.dart';
 
-final navigationIndexProvider = StateProvider<int>((ref) => 0);
+class NavigationIndexNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void update(int index) => state = index;
+}
+
+final navigationIndexProvider = NotifierProvider<NavigationIndexNotifier, int>(
+  NavigationIndexNotifier.new,
+);
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -26,24 +34,19 @@ class HomeView extends ConsumerWidget {
     return Scaffold(
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TopBar(),
-          ),
+          const Padding(padding: EdgeInsets.all(8.0), child: TopBar()),
           Expanded(
             child: IndexedStack(
               index: currentIndex,
-              children: const [
-                TransactionsView(),
-                DashboardView(),
-              ],
+              children: const [TransactionsView(), DashboardView()],
             ),
           ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
-        onTap: (index) => ref.read(navigationIndexProvider.notifier).state = index,
+        onTap: (index) =>
+            ref.read(navigationIndexProvider.notifier).update(index),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.list_alt),

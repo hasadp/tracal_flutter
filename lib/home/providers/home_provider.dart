@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracal/data/database/database.dart';
 import 'package:tracal/data/models/categorical_data.dart';
 import 'package:tracal/home/providers/home_repository_provider.dart';
 
@@ -11,9 +12,7 @@ class DateRangeNotifier extends Notifier<DateTimeRange?> {
 }
 
 final dateRangeProvider = NotifierProvider<DateRangeNotifier, DateTimeRange?>(
-  () {
-    return DateRangeNotifier();
-  },
+  DateRangeNotifier.new,
 );
 
 final categoricalDataProvider = FutureProvider<List<CategoricalData>>((
@@ -44,12 +43,57 @@ final stocksProvider = FutureProvider<List<Stock>>((ref) async {
 });
 
 // Single Table Filters
-final selectedStocksProvider = StateProvider<List<int>>((ref) => []);
-final transactionTypeProvider = StateProvider<String?>((ref) => null);
+class SelectedStocksNotifier extends Notifier<List<int>> {
+  @override
+  List<int> build() => [];
+
+  void update(List<int> stocks) => state = stocks;
+}
+
+final selectedStocksProvider =
+    NotifierProvider<SelectedStocksNotifier, List<int>>(
+      SelectedStocksNotifier.new,
+    );
+
+class TransactionTypeNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void update(String? type) => state = type;
+}
+
+final transactionTypeProvider =
+    NotifierProvider<TransactionTypeNotifier, String?>(
+      TransactionTypeNotifier.new,
+    );
 
 // Pagination State
-final transactionsPageProvider = StateProvider<int>((ref) => 0);
-final transactionsRowsPerPageProvider = StateProvider<int>((ref) => 10);
+class TransactionsPageNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void update(int page) => state = page;
+
+  void next() => state++;
+  void previous() => state--;
+}
+
+final transactionsPageProvider =
+    NotifierProvider<TransactionsPageNotifier, int>(
+      TransactionsPageNotifier.new,
+    );
+
+class TransactionsRowsPerPageNotifier extends Notifier<int> {
+  @override
+  int build() => 10;
+
+  void update(int rows) => state = rows;
+}
+
+final transactionsRowsPerPageProvider =
+    NotifierProvider<TransactionsRowsPerPageNotifier, int>(
+      TransactionsRowsPerPageNotifier.new,
+    );
 
 class TransactionJoined {
   final Transaction transaction;
@@ -57,7 +101,9 @@ class TransactionJoined {
   TransactionJoined(this.transaction, this.stock);
 }
 
-final paginatedTransactionsProvider = FutureProvider<List<TransactionJoined>>((ref) async {
+final paginatedTransactionsProvider = FutureProvider<List<TransactionJoined>>((
+  ref,
+) async {
   final repository = ref.watch(homeRepositoryProvider);
   final dateRange = ref.watch(dateRangeProvider);
   final selectedStocks = ref.watch(selectedStocksProvider);
@@ -77,7 +123,9 @@ final paginatedTransactionsProvider = FutureProvider<List<TransactionJoined>>((r
   final allStocks = await repository.getStocks();
   final stockMap = {for (var s in allStocks) s.id: s};
 
-  return transactions.map((t) => TransactionJoined(t, stockMap[t.stockId]!)).toList();
+  return transactions
+      .map((t) => TransactionJoined(t, stockMap[t.stockId]!))
+      .toList();
 });
 
 final transactionsCountProvider = FutureProvider<int>((ref) async {

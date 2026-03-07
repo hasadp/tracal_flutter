@@ -25,13 +25,17 @@ class TransactionsView extends ConsumerWidget {
                 ],
                 selected: {typeFilter},
                 onSelectionChanged: (Set<String?> newSelection) {
-                  ref.read(transactionTypeProvider.notifier).state = newSelection.first;
-                  ref.read(transactionsPageProvider.notifier).state = 0; // reset page
+                  ref
+                      .read(transactionTypeProvider.notifier)
+                      .update(newSelection.first);
+                  ref
+                      .read(transactionsPageProvider.notifier)
+                      .update(0); // reset page
                 },
               ),
               const SizedBox(width: 20),
               // Multi-select for Stocks could be a simple Dropdown or a bottom sheet
-                  // Here we implement a simple PopupMenuButton for multi-select
+              // Here we implement a simple PopupMenuButton for multi-select
               const StockMultiSelectDropdown(),
               const Spacer(),
               ElevatedButton.icon(
@@ -74,7 +78,11 @@ class StockMultiSelectDropdown extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(selectedStocks.isEmpty ? 'Filter by Stocks (All)' : '${selectedStocks.length} Stocks Selected'),
+                Text(
+                  selectedStocks.isEmpty
+                      ? 'Filter by Stocks (All)'
+                      : '${selectedStocks.length} Stocks Selected',
+                ),
                 const Icon(Icons.arrow_drop_down),
               ],
             ),
@@ -96,8 +104,8 @@ class StockMultiSelectDropdown extends ConsumerWidget {
             } else {
               current.add(val);
             }
-            ref.read(selectedStocksProvider.notifier).state = current;
-            ref.read(transactionsPageProvider.notifier).state = 0; // reset page
+            ref.read(selectedStocksProvider.notifier).update(current);
+            ref.read(transactionsPageProvider.notifier).update(0); // reset page
           },
         );
       },
