@@ -6,6 +6,22 @@ abstract class Api {
     DateTime endDate,
   );
 
+  Future<List<Transaction>> getPaginatedTransactions({
+    required int limit,
+    required int offset,
+    List<int>? stockIds,
+    String? type,
+    DateTime? startDate,
+    DateTime? endDate,
+  });
+
+  Future<int> getTransactionsCount({
+    List<int>? stockIds,
+    String? type,
+    DateTime? startDate,
+    DateTime? endDate,
+  });
+
   Future<List<Transaction>> getAllTransactions(int limit, int page);
   Future<void> addTransaction(Transaction transaction);
 

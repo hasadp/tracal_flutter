@@ -36,3 +36,60 @@ final categoricalDataProvider = FutureProvider<List<CategoricalData>>((
     stocks: stocks,
   );
 });
+
+// Stocks list for dropdowns
+final stocksProvider = FutureProvider<List<Stock>>((ref) async {
+  final repository = ref.watch(homeRepositoryProvider);
+  return repository.getStocks();
+});
+
+// Single Table Filters
+final selectedStocksProvider = StateProvider<List<int>>((ref) => []);
+final transactionTypeProvider = StateProvider<String?>((ref) => null);
+
+// Pagination State
+final transactionsPageProvider = StateProvider<int>((ref) => 0);
+final transactionsRowsPerPageProvider = StateProvider<int>((ref) => 10);
+
+class TransactionJoined {
+  final Transaction transaction;
+  final Stock stock;
+  TransactionJoined(this.transaction, this.stock);
+}
+
+final paginatedTransactionsProvider = FutureProvider<List<TransactionJoined>>((ref) async {
+  final repository = ref.watch(homeRepositoryProvider);
+  final dateRange = ref.watch(dateRangeProvider);
+  final selectedStocks = ref.watch(selectedStocksProvider);
+  final type = ref.watch(transactionTypeProvider);
+  final page = ref.watch(transactionsPageProvider);
+  final limit = ref.watch(transactionsRowsPerPageProvider);
+
+  final transactions = await repository.getPaginatedTransactions(
+    limit: limit,
+    offset: page * limit,
+    stockIds: selectedStocks,
+    type: type,
+    startDate: dateRange?.start,
+    endDate: dateRange?.end,
+  );
+
+  final allStocks = await repository.getStocks();
+  final stockMap = {for (var s in allStocks) s.id: s};
+
+  return transactions.map((t) => TransactionJoined(t, stockMap[t.stockId]!)).toList();
+});
+
+final transactionsCountProvider = FutureProvider<int>((ref) async {
+  final repository = ref.watch(homeRepositoryProvider);
+  final dateRange = ref.watch(dateRangeProvider);
+  final selectedStocks = ref.watch(selectedStocksProvider);
+  final type = ref.watch(transactionTypeProvider);
+
+  return repository.getTransactionsCount(
+    stockIds: selectedStocks,
+    type: type,
+    startDate: dateRange?.start,
+    endDate: dateRange?.end,
+  );
+});
