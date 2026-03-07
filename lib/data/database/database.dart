@@ -92,4 +92,52 @@ class Database extends _$Database implements Api {
     //return (select(transactions)..limit(limit, offset: limit * page)).get();
     return await select(transactions).get();
   }
+
+  @override
+  Future<List<Transaction>> getPaginatedTransactions({
+    required int limit,
+    required int offset,
+    List<int>? stockIds,
+    String? type,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    final query = select(transactions);
+    if (stockIds != null && stockIds.isNotEmpty) {
+      query.where((tbl) => tbl.stockId.isIn(stockIds));
+    }
+    if (type != null) {
+      query.where((tbl) => tbl.type.equals(type));
+    }
+    if (startDate != null && endDate != null) {
+      query.where((tbl) => tbl.date.isBetweenValues(startDate, endDate));
+    }
+    query.orderBy([(tbl) => OrderingTerm.desc(tbl.date)]);
+    query.limit(limit, offset: offset);
+    return query.get();
+  }
+
+  @override
+  Future<int> getTransactionsCount({
+    List<int>? stockIds,
+    String? type,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    final countExp = transactions.id.count();
+    final query = selectOnly(transactions)..addColumns([countExp]);
+
+    if (stockIds != null && stockIds.isNotEmpty) {
+      query.where(transactions.stockId.isIn(stockIds));
+    }
+    if (type != null) {
+      query.where(transactions.type.equals(type));
+    }
+    if (startDate != null && endDate != null) {
+      query.where(transactions.date.isBetweenValues(startDate, endDate));
+    }
+
+    final result = await query.getSingle();
+    return result.read(countExp)!;
+  }
 }

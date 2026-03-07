@@ -18,4 +18,34 @@ class HomeRepository {
     DateTime startDate,
     DateTime endDate,
   ) async => await api.getTransactionsBetweenDates(startDate, endDate);
+
+  Future<List<Transaction>> getPaginatedTransactions({
+    required int limit,
+    required int offset,
+    List<int>? stockIds,
+    String? type,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async =>
+      await api.getPaginatedTransactions(
+        limit: limit,
+        offset: offset,
+        stockIds: stockIds,
+        type: type,
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+  Future<int> getTransactionsCount({
+    List<int>? stockIds,
+    String? type,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async =>
+      await api.getTransactionsCount(
+        stockIds: stockIds,
+        type: type,
+        startDate: startDate,
+        endDate: endDate,
+      );
 }

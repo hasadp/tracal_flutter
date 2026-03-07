@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracal/core/data/strings.dart';
-import 'package:tracal/home/providers/home_provider.dart';
-import 'package:tracal/home/widgets/categorical_table_window.dart';
 import 'package:tracal/home/widgets/top_bar.dart';
+import 'package:tracal/home/view/transactions_view.dart';
+import 'package:tracal/home/view/dashboard_view.dart';
+
+final navigationIndexProvider = StateProvider<int>((ref) => 0);
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -19,24 +21,39 @@ class HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stateList = ref.watch(categoricalDataProvider);
+    final currentIndex = ref.watch(navigationIndexProvider);
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Stack(
-          children: [
-            stateList.when(
-              data: (list) => SingleChildScrollView(
-                child: CategoricalWindows(categoricalDataList: list),
-              ),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) =>
-                  Center(child: Text(Strings.searchErrorHome)),
+      body: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: TopBar(),
+          ),
+          Expanded(
+            child: IndexedStack(
+              index: currentIndex,
+              children: const [
+                TransactionsView(),
+                DashboardView(),
+              ],
             ),
-            const TopBar(),
-          ],
-        ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: (index) => ref.read(navigationIndexProvider.notifier).state = index,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt),
+            label: 'Transactions',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+        ],
       ),
     );
   }

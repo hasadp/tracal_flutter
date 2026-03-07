@@ -47,7 +47,11 @@ class TopBar extends ConsumerWidget {
               ),
               const SizedBox(width: 10),
               ElevatedButton(
-                onPressed: () => ref.invalidate(categoricalDataProvider),
+                onPressed: () {
+                  ref.invalidate(categoricalDataProvider);
+                  ref.invalidate(paginatedTransactionsProvider);
+                  ref.invalidate(transactionsCountProvider);
+                },
                 child: const Text(Strings.search),
               ),
             ],
