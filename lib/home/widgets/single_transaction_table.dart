@@ -31,7 +31,9 @@ class SingleTransactionTable extends ConsumerWidget {
                     scrollDirection: Axis.horizontal,
                     child: SingleChildScrollView(
                       child: DataTable(
-                        headingRowColor: WidgetStateProperty.all(Colors.grey[200]),
+                        headingRowColor: WidgetStateProperty.all(
+                          Colors.grey[200],
+                        ),
                         columns: const [
                           DataColumn(label: Text('Stock')),
                           DataColumn(label: Text(ColumnFields.date)),
@@ -53,14 +55,44 @@ class SingleTransactionTable extends ConsumerWidget {
                               DataCell(Text(t.stock.abbr)),
                               DataCell(
                                 Text(
-                                  formatDate(data.date, [mm, '-', dd, '-', yyyy]),
+                                  formatDate(data.date, [
+                                    mm,
+                                    '-',
+                                    dd,
+                                    '-',
+                                    yyyy,
+                                  ]),
                                 ),
                               ),
-                              DataCell(Text(data.type == 'B' ? data.quantity.toString() : '')),
-                              DataCell(Text(data.type == 'S' ? data.quantity.toString() : '')),
+                              DataCell(
+                                Text(
+                                  data.type == 'B'
+                                      ? data.quantity.toString()
+                                      : '',
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  data.type == 'S'
+                                      ? data.quantity.toString()
+                                      : '',
+                                ),
+                              ),
                               DataCell(Text(data.price.toString())),
-                              DataCell(Text(data.type == 'B' ? (data.quantity * data.price).toString() : '')),
-                              DataCell(Text(data.type == 'S' ? (data.quantity * data.price).toString() : '')),
+                              DataCell(
+                                Text(
+                                  data.type == 'B'
+                                      ? (data.quantity * data.price).toString()
+                                      : '',
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  data.type == 'S'
+                                      ? (data.quantity * data.price).toString()
+                                      : '',
+                                ),
+                              ),
                               DataCell(Text(data.brokerage.toString())),
                               DataCell(Text(data.cvt.toString())),
                               DataCell(Text(data.wht.toString())),
@@ -80,7 +112,7 @@ class SingleTransactionTable extends ConsumerWidget {
                 final page = ref.watch(transactionsPageProvider);
                 final limit = ref.watch(transactionsRowsPerPageProvider);
                 final totalPages = (totalRecords / limit).ceil();
-                
+
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
@@ -98,8 +130,12 @@ class SingleTransactionTable extends ConsumerWidget {
                         }).toList(),
                         onChanged: (val) {
                           if (val != null) {
-                            ref.read(transactionsRowsPerPageProvider.notifier).state = val;
-                            ref.read(transactionsPageProvider.notifier).state = 0;
+                            ref
+                                .read(transactionsRowsPerPageProvider.notifier)
+                                .update(val);
+                            ref
+                                .read(transactionsPageProvider.notifier)
+                                .update(0);
                           }
                         },
                       ),
@@ -107,14 +143,18 @@ class SingleTransactionTable extends ConsumerWidget {
                       IconButton(
                         icon: const Icon(Icons.arrow_back_ios),
                         onPressed: page > 0
-                            ? () => ref.read(transactionsPageProvider.notifier).state--
+                            ? () => ref
+                                  .read(transactionsPageProvider.notifier)
+                                  .previous()
                             : null,
                       ),
                       Text('Page ${page + 1} of $totalPages'),
                       IconButton(
                         icon: const Icon(Icons.arrow_forward_ios),
                         onPressed: page < totalPages - 1
-                            ? () => ref.read(transactionsPageProvider.notifier).state++
+                            ? () => ref
+                                  .read(transactionsPageProvider.notifier)
+                                  .next()
                             : null,
                       ),
                     ],
@@ -123,7 +163,7 @@ class SingleTransactionTable extends ConsumerWidget {
               },
               loading: () => const SizedBox.shrink(),
               error: (e, s) => const SizedBox.shrink(),
-            )
+            ),
           ],
         );
       },

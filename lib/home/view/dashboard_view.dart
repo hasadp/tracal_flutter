@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracal/home/providers/home_provider.dart';
 import 'package:tracal/home/widgets/dashboard_charts.dart';
-import 'package:tracal/data/models/categorical_data.dart';
-import 'package:tracal/core/data/const.dart';
 
 class DashboardView extends ConsumerWidget {
   const DashboardView({super.key});
@@ -19,9 +17,7 @@ class DashboardView extends ConsumerWidget {
         }
         return CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
-              child: DashboardCharts(dataList: list),
-            ),
+            SliverToBoxAdapter(child: DashboardCharts(dataList: list)),
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.all(20.0),
@@ -47,22 +43,29 @@ class DashboardView extends ConsumerWidget {
                       DataColumn(label: Text('Net Return')),
                     ],
                     rows: list.map((item) {
-                      return DataRow(cells: [
-                        DataCell(Text('${item.stockName} (${item.stockAbbr})')),
-                        DataCell(Text(item.buyQty.toString())),
-                        DataCell(Text(item.sellQty.toString())),
-                        DataCell(Text(item.buyAmount.toString())),
-                        DataCell(Text(item.sellAmount.toString())),
-                        DataCell(
-                          Text(
-                            (item.sellAmount - item.buyAmount).toStringAsFixed(2),
-                            style: TextStyle(
-                              color: (item.sellAmount - item.buyAmount) >= 0 ? Colors.green : Colors.red,
-                              fontWeight: FontWeight.bold,
+                      return DataRow(
+                        cells: [
+                          DataCell(
+                            Text('${item.stockName} (${item.stockAbbr})'),
+                          ),
+                          DataCell(Text(item.buyQty.toString())),
+                          DataCell(Text(item.sellQty.toString())),
+                          DataCell(Text(item.buyAmount.toString())),
+                          DataCell(Text(item.sellAmount.toString())),
+                          DataCell(
+                            Text(
+                              (item.sellAmount - item.buyAmount)
+                                  .toStringAsFixed(2),
+                              style: TextStyle(
+                                color: (item.sellAmount - item.buyAmount) >= 0
+                                    ? Colors.green
+                                    : Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                      ]);
+                        ],
+                      );
                     }).toList(),
                   ),
                 ),
@@ -73,7 +76,8 @@ class DashboardView extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => const Center(child: Text('Error loading dashboard')),
+      error: (err, stack) =>
+          const Center(child: Text('Error loading dashboard')),
     );
   }
 }
